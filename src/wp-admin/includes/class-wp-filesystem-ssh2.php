@@ -207,7 +207,8 @@ class WP_Filesystem_SSH2 extends WP_Filesystem_Base {
 			return false;
 		}
 
-		if ( ! ( $stream = ssh2_exec( $this->link, $command ) ) ) {
+		$stream = ssh2_exec( $this->link, $command );
+		if ( ! $stream ) {
 			$this->errors->add(
 				'command',
 				/* translators: %s: command */
@@ -223,7 +224,7 @@ class WP_Filesystem_SSH2 extends WP_Filesystem_Base {
 			fclose( $stream );
 
 			if ( $returnbool ) {
-				return ( $data === false ) ? false : '' != trim( $data );
+				return ( false === $data ) ? false : '' != trim( $data );
 			} else {
 				return $data;
 			}
@@ -259,7 +260,7 @@ class WP_Filesystem_SSH2 extends WP_Filesystem_Base {
 	public function put_contents( $file, $contents, $mode = false ) {
 		$ret = file_put_contents( $this->sftp_path( $file ), $contents );
 
-		if ( $ret !== strlen( $contents ) ) {
+		if ( strlen( $contents ) !== $ret ) {
 			return false;
 		}
 
@@ -627,8 +628,8 @@ class WP_Filesystem_SSH2 extends WP_Filesystem_Base {
 			$struc['group']       = $this->group( $path . '/' . $entry );
 			$struc['size']        = $this->size( $path . '/' . $entry );
 			$struc['lastmodunix'] = $this->mtime( $path . '/' . $entry );
-			$struc['lastmod']     = date( 'M j', $struc['lastmodunix'] );
-			$struc['time']        = date( 'h:i:s', $struc['lastmodunix'] );
+			$struc['lastmod']     = gmdate( 'M j', $struc['lastmodunix'] );
+			$struc['time']        = gmdate( 'h:i:s', $struc['lastmodunix'] );
 			$struc['type']        = $this->is_dir( $path . '/' . $entry ) ? 'd' : 'f';
 
 			if ( 'd' == $struc['type'] ) {

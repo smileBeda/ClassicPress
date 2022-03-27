@@ -40,10 +40,12 @@ function list_core_update( $update ) {
 
 	if ( 'en_US' == $update->locale && 'en_US' == get_locale() ) {
 		$version_string = $update->current;
-	}
-	// If the only available update is a partial builds, it doesn't need a language-specific version string.
-	elseif ( 'en_US' == $update->locale && $update->packages->partial && $wp_version == $update->partial_version && ( $updates = get_core_updates() ) && 1 == count( $updates ) ) {
-		$version_string = $update->current;
+	} elseif ( 'en_US' == $update->locale && $update->packages->partial && $wp_version == $update->partial_version ) {
+		$updates = get_core_updates();
+		if ( $updates && 1 === count( $updates ) ) {
+			// If the only available update is a partial builds, it doesn't need a language-specific version string.
+			$version_string = $update->current;
+		}
 	} else {
 		$version_string = sprintf( '%s&ndash;<strong>%s</strong>', $update->current, $update->locale );
 	}
@@ -116,10 +118,9 @@ function list_core_update( $update ) {
 	echo '</p>';
 	if ( 'en_US' != $update->locale && ( ! isset( $wp_local_package ) || $wp_local_package != $update->locale ) ) {
 		echo '<p class="hint">' . __( 'This localized version contains both the translation and various other localization fixes. You can skip upgrading if you want to keep your current translation.' ) . '</p>';
-	}
-	// Partial builds don't need language-specific warnings.
-	elseif ( 'en_US' == $update->locale && get_locale() != 'en_US' && ( ! $update->packages->partial && $wp_version == $update->partial_version ) ) {
-		echo '<p class="hint">' . sprintf( __( 'You are about to install ClassicPress %s <strong>in English (US).</strong> There is a chance this update will break your translation. You may prefer to wait for the localized version to be released.' ), $update->response != 'development' ? $update->current : '' ) . '</p>';
+	} elseif ( 'en_US' == $update->locale && get_locale() != 'en_US' && ( ! $update->packages->partial && $wp_version == $update->partial_version ) ) {
+		// Partial builds don't need language-specific warnings.
+		echo '<p class="hint">' . sprintf( __( 'You are about to install ClassicPress %s <strong>in English (US).</strong> There is a chance this update will break your translation. You may prefer to wait for the localized version to be released.' ), 'development' != $update->response ? $update->current : '' ) . '</p>';
 	}
 	echo '</form>';
 
@@ -225,7 +226,7 @@ function core_upgrade_preamble() {
 		echo '</h2>';
 	}
 
-	if ( isset( $updates[0] ) && $updates[0]->response == 'development' ) {
+	if ( isset( $updates[0] ) && 'development' == $updates[0]->response ) {
 		require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
 		$upgrader = new WP_Automatic_Updater;
 		if ( $upgrader->should_update( 'core', $updates[0], ABSPATH ) ) {
@@ -243,7 +244,7 @@ function core_upgrade_preamble() {
 	}
 	echo '</ul>';
 	// Don't show the maintenance mode notice when we are only showing a single re-install option.
-	if ( $updates && ( count( $updates ) > 1 || $updates[0]->response != 'latest' ) ) {
+	if ( $updates && ( count( $updates ) > 1 || 'latest' != $updates[0]->response ) ) {
 		echo '<p>' . __( 'While your site is being updated, it will be in maintenance mode. As soon as your updates are complete, your site will return to normal.' ) . '</p>';
 	} elseif ( ! $updates ) {
 		echo '<p>' . sprintf(
@@ -625,7 +626,8 @@ function do_core_upgrade( $reinstall = false ) {
 	<h1><?php _e( 'Update ClassicPress' ); ?></h1>
 	<?php
 
-	if ( false === ( $credentials = request_filesystem_credentials( $url, '', false, ABSPATH, array( 'version', 'locale' ), $allow_relaxed_file_ownership ) ) ) {
+	$credentials = request_filesystem_credentials( $url, '', false, ABSPATH, array( 'version', 'locale' ), $allow_relaxed_file_ownership );
+	if ( false === $credentials ) {
 		echo '</div>';
 		return;
 	}
@@ -747,7 +749,7 @@ $action = isset( $_GET['action'] ) ? $_GET['action'] : 'upgrade-core';
 $upgrade_error = false;
 if ( ( 'do-theme-upgrade' == $action || ( 'do-plugin-upgrade' == $action && ! isset( $_GET['plugins'] ) ) )
 	&& ! isset( $_POST['checked'] ) ) {
-	$upgrade_error = $action == 'do-theme-upgrade' ? 'themes' : 'plugins';
+	$upgrade_error = 'do-theme-upgrade' == $action ? 'themes' : 'plugins';
 	$action        = 'upgrade-core';
 }
 
@@ -798,7 +800,7 @@ if ( 'upgrade-core' == $action ) {
 	<?php
 	if ( $upgrade_error ) {
 		echo '<div class="error"><p>';
-		if ( $upgrade_error == 'themes' ) {
+		if ( 'themes' == $upgrade_error ) {
 			_e( 'Please select one or more themes to update.' );
 		} else {
 			_e( 'Please select one or more plugins to update.' );

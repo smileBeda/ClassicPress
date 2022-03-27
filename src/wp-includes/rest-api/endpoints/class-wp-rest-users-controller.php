@@ -499,7 +499,10 @@ class WP_REST_Users_Controller extends WP_REST_Controller {
 					foreach ( $messages as $message ) {
 						$error->add( $code, $message );
 					}
-					if ( $error_data = $error->get_error_data( $code ) ) {
+
+					$error_data = $error->get_error_data( $code );
+
+					if ( $error_data ) {
 						$error->add_data( $error_data, $code );
 					}
 				}
@@ -599,7 +602,7 @@ class WP_REST_Users_Controller extends WP_REST_Controller {
 			sort( $request_params );
 			// If only 'id' and 'roles' are specified (we are only trying to
 			// edit roles), then only the 'promote_user' cap is required.
-			if ( $request_params === array( 'id', 'roles' ) ) {
+			if ( array( 'id', 'roles' ) === $request_params ) {
 				return true;
 			}
 		}
@@ -910,7 +913,7 @@ class WP_REST_Users_Controller extends WP_REST_Controller {
 		}
 
 		if ( in_array( 'registered_date', $fields, true ) ) {
-			$data['registered_date'] = date( 'c', strtotime( $user->user_registered ) );
+			$data['registered_date'] = gmdate( 'c', strtotime( $user->user_registered ) );
 		}
 
 		if ( in_array( 'capabilities', $fields, true ) ) {

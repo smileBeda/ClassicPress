@@ -103,7 +103,8 @@ if ( $doaction ) {
 
 	switch ( $doaction ) {
 		case 'trash':
-			$trashed = $locked = 0;
+			$trashed = 0;
+			$locked  = 0;
 
 			foreach ( (array) $post_ids as $post_id ) {
 				if ( ! current_user_can( 'delete_post', $post_id ) ) {
@@ -155,7 +156,7 @@ if ( $doaction ) {
 					wp_die( __( 'Sorry, you are not allowed to delete this item.' ) );
 				}
 
-				if ( $post_del->post_type == 'attachment' ) {
+				if ( 'attachment' == $post_del->post_type ) {
 					if ( ! wp_delete_attachment( $post_id ) ) {
 						wp_die( __( 'Error in deleting.' ) );
 					}
@@ -370,7 +371,7 @@ foreach ( $bulk_counts as $message => $count ) {
 		$messages[] = sprintf( $bulk_messages['post'][ $message ], number_format_i18n( $count ) );
 	}
 
-	if ( $message == 'trashed' && isset( $_REQUEST['ids'] ) ) {
+	if ( 'trashed' == $message && isset( $_REQUEST['ids'] ) ) {
 		$ids        = preg_replace( '/[^0-9,]/', '', $_REQUEST['ids'] );
 		$messages[] = '<a href="' . esc_url( wp_nonce_url( "edit.php?post_type=$post_type&doaction=undo&action=untrash&ids=$ids", 'bulk-posts' ) ) . '">' . __( 'Undo' ) . '</a>';
 	}

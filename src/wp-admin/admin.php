@@ -174,7 +174,9 @@ if ( isset( $plugin_page ) ) {
 	} else {
 		$the_parent = $pagenow;
 	}
-	if ( ! $page_hook = get_plugin_page_hook( $plugin_page, $the_parent ) ) {
+
+	$page_hook = get_plugin_page_hook( $plugin_page, $the_parent );
+	if ( ! $page_hook ) {
 		$page_hook = get_plugin_page_hook( $plugin_page, $plugin_page );
 
 		// Back-compat for plugins using add_management_page().
@@ -355,16 +357,16 @@ if ( isset( $plugin_page ) ) {
 	 * The following hooks are fired to ensure backward compatibility.
 	 * In all other cases, 'load-' . $pagenow should be used instead.
 	 */
-	if ( $typenow == 'page' ) {
-		if ( $pagenow == 'post-new.php' ) {
+	if ( 'page' == $typenow ) {
+		if ( 'post-new.php' == $pagenow ) {
 			do_action( 'load-page-new.php' );
-		} elseif ( $pagenow == 'post.php' ) {
+		} elseif ( 'post.php' == $pagenow ) {
 			do_action( 'load-page.php' );
 		}
-	} elseif ( $pagenow == 'edit-tags.php' ) {
-		if ( $taxnow == 'category' ) {
+	} elseif ( 'edit-tags.php' == $pagenow ) {
+		if ( 'category' == $taxnow ) {
 			do_action( 'load-categories.php' );
-		} elseif ( $taxnow == 'link_category' ) {
+		} elseif ( 'link_category' == $taxnow ) {
 			do_action( 'load-edit-link-categories.php' );
 		}
 	} elseif ( 'term.php' === $pagenow ) {

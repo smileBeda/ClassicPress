@@ -18,6 +18,7 @@ define( 'EZSQL_VERSION', 'WP1.25' );
  * @since WP-0.71
  */
 define( 'OBJECT', 'OBJECT' );
+// phpcs:ignore Generic.NamingConventions.UpperCaseConstantName.ConstantNotUpperCase
 define( 'object', 'OBJECT' ); // Back compat.
 
 /**
@@ -1415,7 +1416,8 @@ class wpdb {
 
 		wp_load_translations_early();
 
-		if ( $caller = $this->get_caller() ) {
+		$caller = $this->get_caller();
+		if ( $caller ) {
 			/* translators: 1: Database error message, 2: SQL query, 3: Name of the calling function */
 			$error_str = sprintf( __( 'ClassicPress database error %1$s for query %2$s made by %3$s' ), $str, $this->last_query, $caller );
 		} else {
@@ -1520,7 +1522,8 @@ class wpdb {
 		$this->last_result   = array();
 		$this->col_info      = null;
 		$this->last_query    = null;
-		$this->rows_affected = $this->num_rows = 0;
+		$this->rows_affected = 0;
+		$this->num_rows      = 0;
 		$this->last_error    = '';
 
 		if ( $this->use_mysqli && $this->result instanceof mysqli_result ) {
@@ -1571,7 +1574,8 @@ class wpdb {
 			$socket  = null;
 			$is_ipv6 = false;
 
-			if ( $host_data = $this->parse_db_host( $this->dbhost ) ) {
+			$host_data = $this->parse_db_host( $this->dbhost );
+			if ( $host_data ) {
 				list( $host, $port, $socket, $is_ipv6 ) = $host_data;
 			}
 
@@ -1696,7 +1700,7 @@ class wpdb {
 
 		// First peel off the socket parameter from the right, if it exists.
 		$socket_pos = strpos( $host, ':/' );
-		if ( $socket_pos !== false ) {
+		if ( false !== $socket_pos ) {
 			$socket = substr( $host, $socket_pos + 1 );
 			$host   = substr( $host, 0, $socket_pos );
 		}
@@ -2132,7 +2136,8 @@ class wpdb {
 			return false;
 		}
 
-		$formats = $values = array();
+		$formats = array();
+		$values  = array();
 		foreach ( $data as $value ) {
 			if ( is_null( $value['value'] ) ) {
 				$formats[] = 'NULL';
@@ -2196,7 +2201,9 @@ class wpdb {
 			return false;
 		}
 
-		$fields = $conditions = $values = array();
+		$fields     = array();
+		$conditions = array();
+		$values     = array();
 		foreach ( $data as $field => $value ) {
 			if ( is_null( $value['value'] ) ) {
 				$fields[] = "`$field` = NULL";
@@ -2257,7 +2264,8 @@ class wpdb {
 			return false;
 		}
 
-		$conditions = $values = array();
+		$conditions = array();
+		$values     = array();
 		foreach ( $where as $field => $value ) {
 			if ( is_null( $value['value'] ) ) {
 				$conditions[] = "`$field` IS NULL";
@@ -2329,7 +2337,8 @@ class wpdb {
 	 *               of 'value' and 'format' keys.
 	 */
 	protected function process_field_formats( $data, $format ) {
-		$formats = $original_formats = (array) $format;
+		$formats          = (array) $format;
+		$original_formats = $formats;
 
 		foreach ( $data as $field => $value ) {
 			$value = array(
@@ -2445,7 +2454,7 @@ class wpdb {
 		}
 
 		// If there is a value return it else return null
-		return ( isset( $values[ $x ] ) && $values[ $x ] !== '' ) ? $values[ $x ] : null;
+		return ( isset( $values[ $x ] ) && '' !== $values[ $x ] ) ? $values[ $x ] : null;
 	}
 
 	/**
@@ -2478,11 +2487,11 @@ class wpdb {
 			return null;
 		}
 
-		if ( $output == OBJECT ) {
+		if ( OBJECT == $output ) {
 			return $this->last_result[ $y ] ? $this->last_result[ $y ] : null;
-		} elseif ( $output == ARRAY_A ) {
+		} elseif ( ARRAY_A == $output ) {
 			return $this->last_result[ $y ] ? get_object_vars( $this->last_result[ $y ] ) : null;
-		} elseif ( $output == ARRAY_N ) {
+		} elseif ( ARRAY_N == $output ) {
 			return $this->last_result[ $y ] ? array_values( get_object_vars( $this->last_result[ $y ] ) ) : null;
 		} elseif ( strtoupper( $output ) === OBJECT ) {
 			// Back compat for OBJECT being previously case insensitive.
@@ -2553,10 +2562,10 @@ class wpdb {
 		}
 
 		$new_array = array();
-		if ( $output == OBJECT ) {
+		if ( OBJECT == $output ) {
 			// Return an integer-keyed array of row objects
 			return $this->last_result;
-		} elseif ( $output == OBJECT_K ) {
+		} elseif ( OBJECT_K == $output ) {
 			// Return an array of row objects with keys from column 1
 			// (Duplicates are discarded)
 			if ( $this->last_result ) {
@@ -2569,11 +2578,11 @@ class wpdb {
 				}
 			}
 			return $new_array;
-		} elseif ( $output == ARRAY_A || $output == ARRAY_N ) {
+		} elseif ( ARRAY_A == $output || ARRAY_N == $output ) {
 			// Return an integer-keyed array of...
 			if ( $this->last_result ) {
 				foreach ( (array) $this->last_result as $row ) {
-					if ( $output == ARRAY_N ) {
+					if ( ARRAY_N == $output ) {
 						// ...integer-keyed row arrays
 						$new_array[] = array_values( get_object_vars( $row ) );
 					} else {
@@ -2621,7 +2630,8 @@ class wpdb {
 			return $this->table_charset[ $tablekey ];
 		}
 
-		$charsets = $columns = array();
+		$charsets = array();
+		$columns  = array();
 
 		$table_parts = explode( '.', $table );
 		$table       = '`' . implode( '`.`', $table_parts ) . '`';
@@ -3019,7 +3029,8 @@ class wpdb {
 			}
 
 			// We couldn't use any local conversions, send it to the DB.
-			$value['db'] = $db_check_string = true;
+			$value['db']     = true;
+			$db_check_string = true;
 		}
 		unset( $value ); // Remove by reference.
 
@@ -3277,7 +3288,7 @@ class wpdb {
 		$this->load_col_info();
 
 		if ( $this->col_info ) {
-			if ( $col_offset == -1 ) {
+			if ( -1 == $col_offset ) {
 				$i         = 0;
 				$new_array = array();
 				foreach ( (array) $this->col_info as $col ) {

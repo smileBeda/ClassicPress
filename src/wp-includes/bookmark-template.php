@@ -87,7 +87,7 @@ function _walk_bookmarks( $bookmarks, $args = '' ) {
 				$title .= ' (';
 				$title .= sprintf(
 					__( 'Last updated: %s' ),
-					date(
+					gmdate(
 						get_option( 'links_updated_date_format' ),
 						$bookmark->link_updated_f + ( get_option( 'gmt_offset' ) * HOUR_IN_SECONDS )
 					)
@@ -112,7 +112,7 @@ function _walk_bookmarks( $bookmarks, $args = '' ) {
 
 		$output .= $r['link_before'];
 
-		if ( $bookmark->link_image != null && $r['show_images'] ) {
+		if ( null != $bookmark->link_image && $r['show_images'] ) {
 			if ( strpos( $bookmark->link_image, 'http' ) === 0 ) {
 				$output .= "<img src=\"$bookmark->link_image\" $alt $title />";
 			} else { // If it's a relative path

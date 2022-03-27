@@ -19,12 +19,13 @@ wp_reset_vars( array( 'action' ) );
 if ( isset( $_GET['post'] ) && isset( $_POST['post_ID'] ) && (int) $_GET['post'] !== (int) $_POST['post_ID'] ) {
 	wp_die( __( 'A post ID mismatch has been detected.' ), __( 'Sorry, you are not allowed to edit this item.' ), 400 );
 } elseif ( isset( $_GET['post'] ) ) {
-	$post_id = $post_ID = (int) $_GET['post'];
+	$post_id = (int) $_GET['post'];
 } elseif ( isset( $_POST['post_ID'] ) ) {
-	$post_id = $post_ID = (int) $_POST['post_ID'];
+	$post_id = (int) $_POST['post_ID'];
 } else {
-	$post_id = $post_ID = 0;
+	$post_id = 0;
 }
+$post_ID = $post_id;
 
 /**
  * @global string  $post_type
@@ -151,7 +152,7 @@ switch ( $action ) {
 			$submenu_file  = 'upload.php';
 			$post_new_file = 'media-new.php';
 		} else {
-			if ( isset( $post_type_object ) && $post_type_object->show_in_menu && $post_type_object->show_in_menu !== true ) {
+			if ( isset( $post_type_object ) && $post_type_object->show_in_menu && true !== $post_type_object->show_in_menu ) {
 				$parent_file = $post_type_object->show_in_menu;
 			} else {
 				$parent_file = "edit.php?post_type=$post_type";
@@ -205,6 +206,7 @@ switch ( $action ) {
 
 		wp_update_attachment_metadata( $post_id, $newmeta );
 
+		// Intentional fall-through to trigger the edit_post() call.
 	case 'editpost':
 		check_admin_referer( 'update-post_' . $post_id );
 
@@ -234,7 +236,8 @@ switch ( $action ) {
 			wp_die( __( 'Sorry, you are not allowed to move this item to the Trash.' ) );
 		}
 
-		if ( $user_id = wp_check_post_lock( $post_id ) ) {
+		$user_id = wp_check_post_lock( $post_id );
+		if ( $user_id ) {
 			$user = get_userdata( $user_id );
 			wp_die( sprintf( __( 'You cannot move this item to the Trash. %s is currently editing.' ), $user->display_name ) );
 		}
@@ -291,7 +294,7 @@ switch ( $action ) {
 			wp_die( __( 'Sorry, you are not allowed to delete this item.' ) );
 		}
 
-		if ( $post->post_type == 'attachment' ) {
+		if ( 'attachment' == $post->post_type ) {
 			$force = ( ! MEDIA_TRASH );
 			if ( ! wp_delete_attachment( $post_id, $force ) ) {
 				wp_die( __( 'Error in deleting.' ) );

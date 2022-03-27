@@ -475,7 +475,7 @@ function wpautop( $pee, $br = true ) {
 			$start = strpos( $pee_part, '<pre' );
 
 			// Malformed html?
-			if ( $start === false ) {
+			if ( false === $start ) {
 				$pee .= $pee_part;
 				continue;
 			}
@@ -970,10 +970,10 @@ function _wp_specialchars( $string, $quote_style = ENT_NOQUOTES, $charset = fals
 
 	$_quote_style = $quote_style;
 
-	if ( $quote_style === 'double' ) {
+	if ( 'double' === $quote_style ) {
 		$quote_style  = ENT_COMPAT;
 		$_quote_style = ENT_COMPAT;
-	} elseif ( $quote_style === 'single' ) {
+	} elseif ( 'single' === $quote_style ) {
 		$quote_style = ENT_NOQUOTES;
 	}
 
@@ -1066,16 +1066,16 @@ function wp_specialchars_decode( $string, $quote_style = ENT_NOQUOTES ) {
 		'/&#x0*26;/i' => '&#x26;',
 	);
 
-	if ( $quote_style === ENT_QUOTES ) {
+	if ( ENT_QUOTES === $quote_style ) {
 		$translation      = array_merge( $single, $double, $others );
 		$translation_preg = array_merge( $single_preg, $double_preg, $others_preg );
-	} elseif ( $quote_style === ENT_COMPAT || $quote_style === 'double' ) {
+	} elseif ( ENT_COMPAT === $quote_style || 'double' === $quote_style ) {
 		$translation      = array_merge( $double, $others );
 		$translation_preg = array_merge( $double_preg, $others_preg );
-	} elseif ( $quote_style === 'single' ) {
+	} elseif ( 'single' === $quote_style ) {
 		$translation      = array_merge( $single, $others );
 		$translation_preg = array_merge( $single_preg, $others_preg );
-	} elseif ( $quote_style === ENT_NOQUOTES ) {
+	} elseif ( ENT_NOQUOTES === $quote_style ) {
 		$translation      = $others;
 		$translation_preg = $others_preg;
 	}
@@ -2436,7 +2436,7 @@ function convert_invalid_entities( $content ) {
  * @param bool   $force If true, forces balancing, ignoring the value of the option. Default false.
  * @return string Balanced text
  */
-function balanceTags( $text, $force = false ) {
+function balanceTags( $text, $force = false ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.FunctionNameInvalid
 	if ( $force || get_option( 'use_balanceTags' ) == 1 ) {
 		return force_balance_tags( $text );
 	} else {
@@ -2492,9 +2492,8 @@ function force_balance_tags( $text ) {
 			if ( $stacksize <= 0 ) {
 				$tag = '';
 				// or close to be safe $tag = '/' . $tag;
-			}
-			// if stacktop value = tag close value then pop
-			elseif ( $tagstack[ $stacksize - 1 ] == $tag ) { // found closing tag
+			} elseif ( $tagstack[ $stacksize - 1 ] == $tag ) { // found closing tag
+				// if stacktop value = tag close value then pop
 				$tag = '</' . $tag . '>'; // Close Tag
 				// Pop
 				array_pop( $tagstack );
@@ -2520,21 +2519,18 @@ function force_balance_tags( $text ) {
 			// If it's an empty tag "< >", do nothing
 			if ( '' == $tag ) {
 				// do nothing
-			}
-			// ElseIf it presents itself as a self-closing tag...
-			elseif ( substr( $regex[2], -1 ) == '/' ) {
+			} elseif ( substr( $regex[2], -1 ) == '/' ) {
+				// ElseIf it presents itself as a self-closing tag...
 				// ...but it isn't a known single-entity self-closing tag, then don't let it be treated as such and
 				// immediately close it with a closing tag (the tag will encapsulate no text as a result)
 				if ( ! in_array( $tag, $single_tags ) ) {
 					$regex[2] = trim( substr( $regex[2], 0, -1 ) ) . "></$tag";
 				}
-			}
-			// ElseIf it's a known single-entity tag but it doesn't close itself, do so
-			elseif ( in_array( $tag, $single_tags ) ) {
+			} elseif ( in_array( $tag, $single_tags ) ) {
+				// ElseIf it's a known single-entity tag but it doesn't close itself, do so
 				$regex[2] .= '/';
-			}
-			// Else it's not a single-entity tag
-			else {
+			} else {
+				// Else it's not a single-entity tag
 				// If the top of the stack is the same as the tag we want to push, close previous tag
 				if ( $stacksize > 0 && ! in_array( $tag, $nestable_tags ) && $tagstack[ $stacksize - 1 ] == $tag ) {
 					$tagqueue = '</' . array_pop( $tagstack ) . '>';
@@ -2545,7 +2541,7 @@ function force_balance_tags( $text ) {
 
 			// Attributes
 			$attributes = $regex[2];
-			if ( ! empty( $attributes ) && $attributes[0] != '>' ) {
+			if ( ! empty( $attributes ) && '>' != $attributes[0] ) {
 				$attributes = ' ' . $attributes;
 			}
 
@@ -2767,11 +2763,11 @@ function antispambot( $email_address, $hex_encoding = 0 ) {
 	$email_no_spam_address = '';
 	for ( $i = 0, $len = strlen( $email_address ); $i < $len; $i++ ) {
 		$j = rand( 0, 1 + $hex_encoding );
-		if ( $j == 0 ) {
+		if ( 0 == $j ) {
 			$email_no_spam_address .= '&#' . ord( $email_address[ $i ] ) . ';';
-		} elseif ( $j == 1 ) {
+		} elseif ( 1 == $j ) {
 			$email_no_spam_address .= $email_address[ $i ];
-		} elseif ( $j == 2 ) {
+		} elseif ( 2 == $j ) {
 			$email_no_spam_address .= '%' . zeroise( dechex( ord( $email_address[ $i ] ) ), 2 );
 		}
 	}
@@ -2885,7 +2881,7 @@ function make_clickable( $text ) {
 			$nested_code_pre--;
 		}
 
-		if ( $nested_code_pre || empty( $piece ) || ( $piece[0] === '<' && ! preg_match( '|^<\s*[\w]{1,20}+://|', $piece ) ) ) {
+		if ( $nested_code_pre || empty( $piece ) || ( '<' === $piece[0] && ! preg_match( '|^<\s*[\w]{1,20}+://|', $piece ) ) ) {
 			$r .= $piece;
 			continue;
 		}
@@ -3327,13 +3323,13 @@ function get_date_from_gmt( $string, $format = 'Y-m-d H:i:s' ) {
 	if ( $tz ) {
 		$datetime = date_create( $string, new DateTimeZone( 'UTC' ) );
 		if ( ! $datetime ) {
-			return date( $format, 0 );
+			return gmdate( $format, 0 );
 		}
 		$datetime->setTimezone( new DateTimeZone( $tz ) );
 		$string_localtime = $datetime->format( $format );
 	} else {
 		if ( ! preg_match( '#([0-9]{1,4})-([0-9]{1,2})-([0-9]{1,2}) ([0-9]{1,2}):([0-9]{1,2}):([0-9]{1,2})#', $string, $matches ) ) {
-			return date( $format, 0 );
+			return gmdate( $format, 0 );
 		}
 		$string_time      = gmmktime( $matches[4], $matches[5], $matches[6], $matches[2], $matches[3], $matches[1] );
 		$string_localtime = gmdate( $format, $string_time + get_option( 'gmt_offset' ) * HOUR_IN_SECONDS );
@@ -3351,7 +3347,7 @@ function get_date_from_gmt( $string, $format = 'Y-m-d H:i:s' ) {
  */
 function iso8601_timezone_to_offset( $timezone ) {
 	// $timezone is either 'Z' or '[+|-]hhmm'
-	if ( $timezone == 'Z' ) {
+	if ( 'Z' == $timezone ) {
 		$offset = 0;
 	} else {
 		$sign    = ( substr( $timezone, 0, 1 ) == '+' ) ? 1 : -1;
@@ -3374,7 +3370,7 @@ function iso8601_timezone_to_offset( $timezone ) {
 function iso8601_to_datetime( $date_string, $timezone = 'user' ) {
 	$timezone = strtolower( $timezone );
 
-	if ( $timezone == 'gmt' ) {
+	if ( 'gmt' == $timezone ) {
 
 		preg_match( '#([0-9]{4})([0-9]{2})([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})(Z|[\+|\-][0-9]{2,4}){0,1}#', $date_string, $date_bits );
 
@@ -3389,7 +3385,7 @@ function iso8601_to_datetime( $date_string, $timezone = 'user' ) {
 
 		return gmdate( 'Y-m-d H:i:s', $timestamp );
 
-	} elseif ( $timezone == 'user' ) {
+	} elseif ( 'user' == $timezone ) {
 		return preg_replace( '#([0-9]{4})([0-9]{2})([0-9]{2})T([0-9]{2}):([0-9]{2}):([0-9]{2})(Z|[\+|\-][0-9]{2,4}){0,1}#', '$1-$2-$3 $4:$5:$6', $date_string );
 	}
 }
@@ -4413,7 +4409,7 @@ function sanitize_option( $option, $value ) {
 		case 'default_ping_status':
 		case 'default_comment_status':
 			// Options that if not there have 0 value but need to be something like "closed"
-			if ( $value == '0' || $value == '' ) {
+			if ( '0' == $value || '' == $value ) {
 				$value = 'closed';
 			}
 			break;
@@ -4731,7 +4727,7 @@ function wp_sprintf( $pattern ) {
 		$fragment = substr( $pattern, $start, $end - $start );
 
 		// Fragment has a specifier
-		if ( $pattern[ $start ] == '%' ) {
+		if ( '%' == $pattern[ $start ] ) {
 			// Find numbered arguments or take the next one in order
 			if ( preg_match( '/^%(\d+)\$/', $fragment, $matches ) ) {
 				$arg      = isset( $args[ $matches[1] ] ) ? $args[ $matches[1] ] : '';
@@ -5100,6 +5096,7 @@ function wp_basename( $path, $suffix = '' ) {
 	return urldecode( basename( str_replace( array( '%2F', '%5C' ), '/', urlencode( $path ) ), $suffix ) );
 }
 
+// phpcs:disable WordPress.WP.CapitalPDangit.Misspelled, WordPress.NamingConventions.ValidFunctionName.FunctionNameInvalid -- 8-)
 /**
  * Forever eliminate "Classicpress" from the planet (or at least the little bit we can influence).
  *
@@ -5129,6 +5126,7 @@ function capital_P_dangit( $text ) {
 		$text
 	);
 }
+// phpcs:enable
 
 /**
  * Sanitize a mime type
@@ -5719,7 +5717,8 @@ function sanitize_hex_color_no_hash( $color ) {
  * @return string
  */
 function maybe_hash_hex_color( $color ) {
-	if ( $unhashed = sanitize_hex_color_no_hash( $color ) ) {
+	$unhashed = sanitize_hex_color_no_hash( $color );
+	if ( $unhashed ) {
 		return '#' . $unhashed;
 	}
 

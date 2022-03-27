@@ -27,7 +27,8 @@ switch ( $action ) {
 
 		if ( empty( $errors ) ) {
 			$location = 'media.php';
-			if ( $referer = wp_get_original_referer() ) {
+			$referer  = wp_get_original_referer();
+			if ( $referer ) {
 				if ( false !== strpos( $referer, 'upload.php' ) || ( url_to_postid( $referer ) == $attachment_id ) ) {
 					$location = $referer;
 				}
@@ -68,7 +69,7 @@ switch ( $action ) {
 		if ( 'attachment' !== $att->post_type ) {
 			wp_die( __( 'You attempted to edit an item that isn&#8217;t an attachment. Please go back and try again.' ) );
 		}
-		if ( $att->post_status == 'trash' ) {
+		if ( 'trash' == $att->post_status ) {
 			wp_die( __( 'You can&#8217;t edit this attachment because it is in the Trash. Please move it out of the Trash and try again.' ) );
 		}
 

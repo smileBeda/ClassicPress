@@ -46,7 +46,7 @@ do_action( 'rss_tag_pre', 'atom-comments' );
 	<updated>
 	<?php
 		$date = get_lastcommentmodified( 'GMT' );
-		echo $date ? mysql2date( 'Y-m-d\TH:i:s\Z', $date, false ) : date( 'Y-m-d\TH:i:s\Z' );
+		echo $date ? mysql2date( 'Y-m-d\TH:i:s\Z', $date, false ) : gmdate( 'Y-m-d\TH:i:s\Z' );
 	?>
 	</updated>
 
@@ -75,7 +75,8 @@ do_action( 'rss_tag_pre', 'atom-comments' );
 if ( have_comments() ) :
 	while ( have_comments() ) :
 		the_comment();
-		$comment_post = $GLOBALS['post'] = get_post( $comment->comment_post_ID );
+		$comment_post    = get_post( $comment->comment_post_ID );
+		$GLOBALS['post'] = $comment_post;
 		?>
 	<entry>
 		<title>
@@ -113,7 +114,7 @@ if ( have_comments() ) :
 			<?php
 		endif; // post pass
 		// Return comment threading information (https://www.ietf.org/rfc/rfc4685.txt)
-		if ( $comment->comment_parent == 0 ) : // This comment is top level
+		if ( 0 == $comment->comment_parent ) : // This comment is top level
 			?>
 		<thr:in-reply-to ref="<?php the_guid(); ?>" href="<?php the_permalink_rss(); ?>" type="<?php bloginfo_rss( 'html_type' ); ?>" />
 			<?php

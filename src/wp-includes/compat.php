@@ -358,7 +358,7 @@ if ( ! function_exists( 'hash_equals' ) ) :
 	 */
 	function hash_equals( $a, $b ) {
 		$a_length = strlen( $a );
-		if ( $a_length !== strlen( $b ) ) {
+		if ( strlen( $b ) !== $a_length ) {
 			return false;
 		}
 		$result = 0;
@@ -373,7 +373,7 @@ if ( ! function_exists( 'hash_equals' ) ) :
 			$result |= ord( $a[ $i ] ) ^ ord( $b[ $i ] );
 		}
 
-		return $result === 0;
+		return 0 === $result;
 	}
 endif;
 
@@ -438,22 +438,6 @@ if ( ! function_exists( 'json_last_error_msg' ) ) :
 		}
 	}
 endif;
-
-if ( ! interface_exists( 'JsonSerializable' ) ) {
-	define( 'WP_JSON_SERIALIZE_COMPATIBLE', true );
-	/**
-	 * JsonSerializable interface.
-	 *
-	 * Compatibility shim for PHP <5.4
-	 *
-	 * @link https://secure.php.net/jsonserializable
-	 *
-	 * @since WP-4.4.0
-	 */
-	interface JsonSerializable {
-		public function jsonSerialize();
-	}
-}
 
 // random_int was introduced in PHP 7.0
 if ( ! function_exists( 'random_int' ) ) {
