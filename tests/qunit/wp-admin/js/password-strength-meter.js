@@ -95,14 +95,8 @@ jQuery( function() {
 	QUnit.test( 'user input blacklist array should contain expected words', function( assert ) {
 		var blacklist = wp.passwordStrength.userInputBlacklist();
 
-<<<<<<< HEAD
-		ok( jQuery.isArray( blacklist ), 'blacklist is an array' );
-		ok( jQuery.inArray( 'ClassicPress', blacklist ) > -1, 'blacklist contains "ClassicPress" from page title' );
-		ok( jQuery.inArray( 'tests', blacklist ) > -1, 'blacklist contains "tests" from site URL' );
-=======
 		assert.ok( jQuery.isArray( blacklist ), 'blacklist is an array' );
-		assert.ok( jQuery.inArray( 'WordPress', blacklist ) > -1, 'blacklist contains "WordPress" from page title' );
+		assert.ok( jQuery.inArray( 'ClassicPress', blacklist ) > -1, 'blacklist contains "ClassicPress" from page title' );
 		assert.ok( jQuery.inArray( 'tests', blacklist ) > -1, 'blacklist contains "tests" from site URL' );
->>>>>>> 98584d6e11 (Build/Test Tools: Update QUnit and Sinon to the latest versions.)
 	});
 });

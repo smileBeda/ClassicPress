@@ -82,13 +82,8 @@ jQuery( function( $ ) {
 	});
 
 
-<<<<<<< HEAD
-	// Implements todo : Test Class.constructor() manipulation
-	module( 'Customize Base: Constructor Manipulation' );
-=======
 	// Implements todo: Test Class.constructor() manipulation.
 	QUnit.module( 'Customize Base: Constructor Manipulation' );
->>>>>>> 98584d6e11 (Build/Test Tools: Update QUnit and Sinon to the latest versions.)
 
 	newConstructor = function ( instanceProps ) {
 			$.extend( this , instanceProps || {} );

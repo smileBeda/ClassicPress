@@ -204,7 +204,7 @@ jQuery( function() {
 
 		assert.deepEqual( wp.shortcode.attrs('foo "bar" \'baz\''), expected, 'attr parsed numeric attributes');
 	});
-	
+
 	QUnit.test( 'attrs() should return mixed attributes created with single, double, and no quotes', function( assert ) {
 		var expected = {
 			'named': { a: 'foo', b: 'bar', c: 'baz' }, 'numeric' : ['foo', 'bar', 'baz']
@@ -212,32 +212,4 @@ jQuery( function() {
 
 		assert.deepEqual( wp.shortcode.attrs('a="foo" b=\'bar\' c=baz foo "bar" \'baz\''), expected, 'attr parsed numeric attributes');
 	});
-<<<<<<< HEAD
-=======
-
-	QUnit.test( 'string() should accept attrs in any order', function( assert ) {
-		var expected = '[short abc123 foo="bar"]';
-		var result;
-
-		result = wp.shortcode.string({
-			tag   : 'short',
-			type  : 'single',
-			attrs : {
-				named   : { foo : 'bar' },
-				numeric : [ 'abc123' ]
-			}
-		});
-		assert.deepEqual( result, expected, 'attributes are accepted in any order' );
-
-		result = wp.shortcode.string({
-			tag   : 'short',
-			type  : 'single',
-			attrs : {
-				numeric : [ 'abc123' ],
-				named   : { foo : 'bar' }
-			}
-		});
-		assert.deepEqual( result, expected, 'attributes are accepted in any order' );
-	});
->>>>>>> 98584d6e11 (Build/Test Tools: Update QUnit and Sinon to the latest versions.)
 });
